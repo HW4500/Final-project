@@ -3,12 +3,13 @@
 #include <string.h>
 #include <math.h>
 
-
 #include <sys/types.h>
 #include <sys/stat.h>
+#include<sys\timeb.h>
 
 #include <windows.h>
 
+double mytimecheck(void);
 
 int main(int argc, char* argv[])
 {
@@ -17,9 +18,10 @@ int main(int argc, char* argv[])
 	char mybuffer[100];
 	int N, T;
 	double alpha,pi1,pi2,p1,p2,rho;
-    int j, h, t;
-    double pi, *optimal, newprice, candidate, bestone, *shift;
+    int j, h, t,m;
+    double pi, *optimal, newprice, candidate, bestone, *shift1, *shift2,timestart, runtime;
 
+	
 	if (argc != 2){
 		printf("Usage:  arb1.exe datafilename\n"); retcode = 100; goto BACK;
 	}
@@ -62,45 +64,75 @@ int main(int argc, char* argv[])
 	fclose(in);
 
 
-  pi = pi1;
+  timestart = mytimecheck();
 
   optimal = (double *)calloc((N + 1)*T, sizeof(double));
   if (!optimal){
 	  printf("cannot allocate large matrix\n"); retcode = 2; goto BACK;
   }
 
- shift = (double *)calloc(N + 1, sizeof(double));
+ shift1 = (double *)calloc(N + 1, sizeof(double));
+ if (!shift1){
+	  printf("cannot allocate large list\n"); retcode = 2; goto BACK;
+  }
+ shift2 = (double *)calloc(N + 1, sizeof(double));
+ if (!shift2){
+	  printf("cannot allocate large list\n"); retcode = 2; goto BACK;
+  }
 
- for (j = 0; j <= N; j++)
-	  shift[j] = 1 - alpha*pow((double)j, pi);
+
+ for (j = 0; j <= N; j++){
+	  shift1[j] = 1 - alpha*pow((double)j, pi1);
+      shift2[j] = 1 - alpha*pow((double)j, pi2);
+}
 	  
-
+printf("pi1 %g, pi2 %g\n",pi1,pi2);
   /** do last stage **/
   for (j = 0; j <= N; j++){
-	  newprice = shift[j];
-	  optimal[(T - 1)*(N + 1) + j] = newprice*j;
+	  newprice = p1*shift1[j]+p2*shift2[j];
+	  optimal[(T - 1)*(N + 1) + j] = newprice*j*rho;
 	  // V[k,t] stored at optimal[t*(N+1) + k] 
   }
+  
+  
   for (t= T - 2; t>= 0; t--){
 	  for (j = 0; j <= N; j++){
 
 		  bestone = 0;
 		  /** enumerate possibilities **/
 		  for (h = 0; h <= j; h++){
-			  newprice = shift[h];
-			  candidate = newprice*h + newprice*optimal[(t + 1)*(N + 1) + j - h];
-
-			  if (candidate > bestone)
-				  bestone = candidate;
+			  newprice = p1*shift1[h]+p2*shift2[h];
+			  candidate= newprice*((1-rho)*optimal[(t + 1)*(N + 1) + j ] + rho*(h+optimal[(t + 1)*(N + 1) + j - h]));
+			  if (candidate > bestone) bestone = candidate;
 		  }
 		  optimal[t*(N + 1) + j] = bestone;
 	  }
 	  printf("done with stage t = %d\n", t);
   }
 
-  printf("optimal value for trade sequencing = %g\n", optimal[N]);
+  runtime = mytimecheck() - timestart; 
+  if (runtime < 0) runtime = 0;  
+  
+  printf("optimal value for trade sequencing = %g in %g\n", optimal[N],runtime);
+
+
 
 BACK:
   printf("\nran with code %d\n", retcode);
   return retcode;
+}
+
+
+
+double mytimecheck(void)
+{
+   double seconds, millis;
+   struct timeb mytimeb;
+
+   ftime(&mytimeb);
+
+   seconds = (double) mytimeb.time;
+   millis = ( (double) mytimeb.millitm)/1000.00;
+
+   return seconds+millis;
 }
