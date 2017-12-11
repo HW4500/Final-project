@@ -1,1 +1,4 @@
-"# Final-project" 
+Part 1. Write a C or C++ program that reads a data file containing a number of problem instances for the generalized trade impact model discussed in the last lecture and given in this document. Each instance of the problem consists of the eight numbers N, T, alpha, pi1, pi2, p1, p2 and rho as described in the document. The data file can have any format so long as it is easy to understand. 
+The program should implement the optimal trade execution dynamic program under the generalized model. You can use my code (for the standard model) as a starting point, if you wish. Your program should be multithreaded, with at least two separate threads doing computations. 
+
+Part 2. Experiment with the numbers N, T, alpha, pi1, pi2, p1, p2 and rho so as to obtain different structures in the optimal execution plans. Discuss.
