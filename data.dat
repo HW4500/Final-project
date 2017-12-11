@@ -1,0 +1,12 @@
+Problem instances for the generalized trade impact model
+ 
+N=10000
+T=10
+alpha=0.001
+pi1=.8
+pi2=.7
+p1=.4
+p2=.6
+rho=.9
+
+END
