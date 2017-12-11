@@ -6,8 +6,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include<sys\timeb.h>
-
+#include "safef.h"
 #include <windows.h>
+ 
+
 
 double mytimecheck(void);
 
@@ -15,11 +17,12 @@ int main(int argc, char* argv[])
 {
 	int retcode = 0;
 	FILE *in = NULL;
-	char mybuffer[100];
+	char mybuffer[60];
 	int N, T;
 	double alpha,pi1,pi2,p1,p2,rho;
-    int j, h, t,m;
-    double pi, *optimal, newprice, candidate, bestone, *shift1, *shift2,timestart, runtime;
+	long lt=60;
+    int j, h, t;
+    double *optimal, newprice, candidate, bestone, *shift1, *shift2,timestart, runtime;
 
 	
 	if (argc != 2){
@@ -32,30 +35,30 @@ int main(int argc, char* argv[])
 		retcode = 200; goto BACK;
 	}
 
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	N = atoi(mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	T = atoi(mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	alpha = atof(mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	pi1 = atof(mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	pi2 = atof(mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	p1 = atof(mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	p2 = atof(mybuffer);
-	fscanf(in, "%s", mybuffer);
-	fscanf(in, "%s", mybuffer);
+	saferfscanf(mybuffer,in, lt);
+	saferfscanf(mybuffer,in, lt);
 	rho = atof(mybuffer);
 
 	printf("Numer of assets: %d, Number of periods: %d\nalpha = %g, pi1 = %g, pi2 = %g, p1 = %g, p2 = %g, rho = %g\n\n",
@@ -124,15 +127,3 @@ BACK:
 
 
 
-double mytimecheck(void)
-{
-   double seconds, millis;
-   struct timeb mytimeb;
-
-   ftime(&mytimeb);
-
-   seconds = (double) mytimeb.time;
-   millis = ( (double) mytimeb.millitm)/1000.00;
-
-   return seconds+millis;
-}
