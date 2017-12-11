@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 	fscanf(in, "%s", mybuffer);
 	rho = atof(mybuffer);
 
-	printf("Numer of assets: %d, Number of periods: %d\nalpha = %g, pi1 = %g, pi2 = %g, p1 = %g, p2 = %g, rho = %g\n",
+	printf("Numer of assets: %d, Number of periods: %d\nalpha = %g, pi1 = %g, pi2 = %g, p1 = %g, p2 = %g, rho = %g\n\n",
 		N, T, alpha,pi1,pi2,p1,p2,rho);
 
 	fclose(in);
