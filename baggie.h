@@ -39,7 +39,6 @@ public:
   HANDLE stepdone1sectionmutex;
   HANDLE stepdone2sectionmutex;
   HANDLE consolemutex;
-  double result;
   void letmein(void);
   void seeya(void);
 };

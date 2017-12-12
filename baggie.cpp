@@ -12,7 +12,6 @@ baggie :: baggie(double* optimal_in, double* shift1_in, double* shift2_in,
 	optimal = optimal_in; shift2 = shift2_in;shift1 = shift1_in;
 	name = name_in;
 	N=N_in; T=T_in; alpha=alpha_in; pi1=pi1_in; pi2=pi2_in; p1=p1_in; p2=p2_in; rho=rho_in;
-	result = 0;
 	status = WAITING;
 	iterationsdone = -1;
 
@@ -86,6 +85,5 @@ void baggie :: baggiecomp(void)
 			seeya();
 
 	}
-	result =  optimal[N];
 }
 

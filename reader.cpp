@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
 	int nowstepdone2mutexes = T-1;
 
 	for(int j = 0; j < Nw; j++){
-		ppbaggies[j] = new baggie(optimal,shift1,shift2,j,N, T,alpha,pi1,pi2,p1,p2,rho);  // fake "jobs": normally we would get a list of jobs from e.g. a file
+		ppbaggies[j] = new baggie(optimal,dbldup(shift1, N+1),dbldup(shift2,N+1),j,N, T,alpha,pi1,pi2,p1,p2,rho);  // fake "jobs": normally we would get a list of jobs from e.g. a file
 		ppbaggies[j]->setstepdone1sectionmutex(stepdone1mutexe); 
 		ppbaggies[j]->setstepdone2sectionmutex(stepdone2mutexe); 
 		ppbaggies[j]->setnowstepdone1mutexesaddress( &nowstepdone1mutexes );	
