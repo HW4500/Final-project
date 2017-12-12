@@ -15,10 +15,10 @@ public:
   double getmeits(void){return iterationsdone;}
   void setstatustofinished(void){status = FINISHED;}
   int getstatus(void){ return status; }
-  void setiamdonesectionmutex(HANDLE iamdonesectioninput){iamdonesectionmutex = iamdonesectioninput;}
-  void setiamworkingsectionmutex(HANDLE iamworkingsectioninput){iamworkingsectionmutex = iamworkingsectioninput;}
-  void setnowdonemutexesaddress(int *paddress){address_of_nowiamdonesection = paddress;}
-  void setnowworkingmutexesaddress(int *paddress){address_of_nowiamworkingsection = paddress;}
+  void setstepdone1sectionmutex(HANDLE stepdone1sectioninput){stepdone1sectionmutex = stepdone1sectioninput;}
+  void setstepdone2sectionmutex(HANDLE stepdone2sectioninput){stepdone2sectionmutex = stepdone2sectioninput;}
+  void setnowstepdone1mutexesaddress(int *paddress){address_of_nowstepdone1section = paddress;}
+  void setnowstepdone2mutexesaddress(int *paddress){address_of_nowstepdone2section = paddress;}
  private:
   double* optimal;
   double* shift1;
@@ -34,10 +34,10 @@ public:
   double rho;
   double iterationsdone;
   int status;
-  int *address_of_nowiamdonesection;  /** this is the address of the integer keeping track of how many workers are done **/
-  int *address_of_nowiamworkingsection;  /** this is the address of the integer keeping track of how many workers are busy **/
-  HANDLE iamdonesectionmutex;
-  HANDLE iamworkingsectionmutex;
+  int *address_of_nowstepdone1section;  /** this is the address of the integer keeping track of how many workers are done **/
+  int *address_of_nowstepdone2section;  /** this is the address of the integer keeping track of how many workers are busy **/
+  HANDLE stepdone1sectionmutex;
+  HANDLE stepdone2sectionmutex;
   HANDLE consolemutex;
   double result;
   void letmein(void);

@@ -26,32 +26,38 @@ void baggie :: setconsolemutex(HANDLE consolemutexinput)
 void baggie :: letmein(void)
 {
 	char icangoin;
-	int localiamdonesection;
-	
+	int localstep1donesection;
+	int localstep2donesection;
+
 		icangoin = 0;
 		while(icangoin == 0){
 			Sleep(1000);
-			WaitForSingleObject(iamdonesectionmutex, INFINITE);
+			WaitForSingleObject(stepdone1sectionmutex, INFINITE);
+			WaitForSingleObject(stepdone2sectionmutex, INFINITE);
 			 
-			if( (*address_of_nowiamdonesection) != 1){
+			if( *address_of_nowstepdone1section*(1-name)+*address_of_nowstepdone2section*name >= *address_of_nowstepdone2section*(1-name)+*address_of_nowstepdone1section*name){
 				/** key logic: it checks to see if the number of workers in the heavy section is less than the
 				number we want to allow **/
 				icangoin = 1;
-				*address_of_nowiamdonesection=0; //** increase the count
-				localiamdonesection = *address_of_nowiamdonesection;  
-				// so localinheavysection will have the count of busy workers
+				localstep1donesection = *address_of_nowstepdone1section;
+				localstep2donesection = *address_of_nowstepdone2section;
 			}
 
-			ReleaseMutex(iamdonesectionmutex);
+			ReleaseMutex(stepdone1sectionmutex);
+			ReleaseMutex(stepdone2sectionmutex);
 		}
 		WaitForSingleObject(consolemutex, INFINITE);
-		cout << "******worker" << name <<": I'm in\n";
+		cout << "******worker" << name <<": I'm in. 0 is at " << localstep1donesection << " and 1 is at " << localstep2donesection << " \n";
 		// we can use localinheavysection without protecting it with a mutex, because it is a local variable to this function, i.e.
 		// it is not shared with other mutexes
 		ReleaseMutex(consolemutex);
 }
 
-void baggie :: seeya(void){++*address_of_nowiamdonesection;}
+void baggie :: seeya(void){
+	if(name){--*address_of_nowstepdone2section;}
+	else{--*address_of_nowstepdone1section;}
+	
+}
 
 void baggie :: baggiecomp(void)
 {
@@ -73,17 +79,12 @@ void baggie :: baggiecomp(void)
 				  if (candidate > bestone) bestone = candidate;
 			  }
 			  optimal[t*(N + 1) + j] = bestone;
-			  printf("name: %d iamhere: %d\n",name,j);
 		  }
-		printf("name: %d iamhere\n",name);
 		  WaitForSingleObject(consolemutex, INFINITE);
 			cout << "******worker" << name <<": I am done with stage t = " << t <<"\n";
 			ReleaseMutex(consolemutex);
 			seeya();
 
-			WaitForSingleObject(consolemutex, INFINITE);
-			printf(" >> worker %d:  I am out\n", name);
-			ReleaseMutex(consolemutex);
 	}
 	result =  optimal[N];
 }

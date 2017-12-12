@@ -113,8 +113,8 @@ int main(int argc, char* argv[])
 	HANDLE *pThread;
 	unsigned *pthreadID;
 	HANDLE consolemutex;
-	HANDLE iamdonemutexe;
-	HANDLE iamworkingmutexe;
+	HANDLE stepdone1mutexe;
+	HANDLE stepdone2mutexe;
 	int Nw=2;
 
 	baggie **ppbaggies;
@@ -131,17 +131,17 @@ int main(int argc, char* argv[])
 		retcode = 1; goto BACK;
 	}
 
-	iamdonemutexe = CreateMutex(NULL, 0, NULL);
-	iamworkingmutexe = CreateMutex(NULL, 0, NULL);
-	int nowdonemutexes = 2;
-	int nowworkingmutexes = 0;
+	stepdone1mutexe = CreateMutex(NULL, 0, NULL);
+	stepdone2mutexe = CreateMutex(NULL, 0, NULL);
+	int nowstepdone1mutexes = T-1;
+	int nowstepdone2mutexes = T-1;
 
 	for(int j = 0; j < Nw; j++){
 		ppbaggies[j] = new baggie(optimal,shift1,shift2,j,N, T,alpha,pi1,pi2,p1,p2,rho);  // fake "jobs": normally we would get a list of jobs from e.g. a file
-		ppbaggies[j]->setiamdonesectionmutex(iamdonemutexe); 
-		ppbaggies[j]->setiamworkingsectionmutex(iamworkingmutexe); 
-		ppbaggies[j]->setnowdonemutexesaddress( &nowdonemutexes );	
-		ppbaggies[j]->setnowworkingmutexesaddress( &nowworkingmutexes );
+		ppbaggies[j]->setstepdone1sectionmutex(stepdone1mutexe); 
+		ppbaggies[j]->setstepdone2sectionmutex(stepdone2mutexe); 
+		ppbaggies[j]->setnowstepdone1mutexesaddress( &nowstepdone1mutexes );	
+		ppbaggies[j]->setnowstepdone2mutexesaddress( &nowstepdone2mutexes );
 	}
 
 
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 	}
 	
 
-	for(int j = 0; j < N; j++){
+	for(int j = 0; j < Nw; j++){
 		WaitForSingleObject(pThread[j], INFINITE);
 		printf("--> thread %d done\n", j); 
 		delete ppbaggies[j]; // calls destructor
