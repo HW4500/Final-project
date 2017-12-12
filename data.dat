@@ -2,11 +2,11 @@ Problem_instances_for_the_generalized_trade_impact_model
  
 N 10000
 T 10
-alpha 0.001
+alpha 0.00001
 pi1 .8
-pi2 .7
-p1 .4
-p2 .6
-rho .9
+pi2 .83
+p1 .9
+p2 .1
+rho 1
 
 END

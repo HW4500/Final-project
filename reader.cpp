@@ -1,17 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <process.h>
 #include <math.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include<sys\timeb.h>
 #include "safef.h"
+#include "baggie.h"
 #include <windows.h>
- 
+
 
 
 double mytimecheck(void);
+unsigned _stdcall comp_wrapper(void *foo);
+double * dbldup(double const * src, int len);
 
 int main(int argc, char* argv[])
 {
@@ -24,8 +28,8 @@ int main(int argc, char* argv[])
     int j, h, t;
     double *optimal, newprice, candidate, bestone, *shift1, *shift2,timestart, runtime;
 
-	
-	if (argc != 2){
+
+		if (argc != 2){
 		printf("Usage:  arb1.exe datafilename\n"); retcode = 100; goto BACK;
 	}
 
@@ -87,31 +91,97 @@ int main(int argc, char* argv[])
  for (j = 0; j <= N; j++){
 	  shift1[j] = 1 - alpha*pow((double)j, pi1);
       shift2[j] = 1 - alpha*pow((double)j, pi2);
-}
+ }
 	  
-printf("pi1 %g, pi2 %g\n",pi1,pi2);
   /** do last stage **/
   for (j = 0; j <= N; j++){
 	  newprice = p1*shift1[j]+p2*shift2[j];
 	  optimal[(T - 1)*(N + 1) + j] = newprice*j*rho;
 	  // V[k,t] stored at optimal[t*(N+1) + k] 
   }
-  
-  
-  for (t= T - 2; t>= 0; t--){
-	  for (j = 0; j <= N; j++){
 
-		  bestone = 0;
-		  /** enumerate possibilities **/
-		  for (h = 0; h <= j; h++){
-			  newprice = p1*shift1[h]+p2*shift2[h];
-			  candidate= newprice*((1-rho)*optimal[(t + 1)*(N + 1) + j ] + rho*(h+optimal[(t + 1)*(N + 1) + j - h]));
-			  if (candidate > bestone) bestone = candidate;
-		  }
-		  optimal[t*(N + 1) + j] = bestone;
-	  }
-	  printf("done with stage t = %d\n", t);
-  }
+
+
+
+
+
+
+
+
+
+
+	HANDLE *pThread;
+	unsigned *pthreadID;
+	HANDLE consolemutex;
+	HANDLE iamdonemutexe;
+	HANDLE iamworkingmutexe;
+	int Nw=2;
+
+	baggie **ppbaggies;
+	ppbaggies = (baggie **)calloc(Nw, sizeof(baggie *));
+	/** ppbaggies is an array, each of whose members is the address of a baggie, and so the type of ppbaggies is baggie ** **/
+	if(ppbaggies == NULL){
+		cout << "cannot allocate" << Nw <<"baggies\n";
+		retcode = 1; goto BACK;
+	}
+	pThread = (HANDLE *)calloc(Nw, sizeof(HANDLE));
+	pthreadID= (unsigned *)calloc(Nw, sizeof(unsigned));
+	if((pThread == NULL) || (pthreadID == NULL)) {
+		cout << "cannot allocate" << Nw << "handles and threadids\n";
+		retcode = 1; goto BACK;
+	}
+
+	iamdonemutexe = CreateMutex(NULL, 0, NULL);
+	iamworkingmutexe = CreateMutex(NULL, 0, NULL);
+	int nowdonemutexes = 2;
+	int nowworkingmutexes = 0;
+
+	for(int j = 0; j < Nw; j++){
+		ppbaggies[j] = new baggie(optimal,shift1,shift2,j,N, T,alpha,pi1,pi2,p1,p2,rho);  // fake "jobs": normally we would get a list of jobs from e.g. a file
+		ppbaggies[j]->setiamdonesectionmutex(iamdonemutexe); 
+		ppbaggies[j]->setiamworkingsectionmutex(iamworkingmutexe); 
+		ppbaggies[j]->setnowdonemutexesaddress( &nowdonemutexes );	
+		ppbaggies[j]->setnowworkingmutexesaddress( &nowworkingmutexes );
+	}
+
+
+	consolemutex = CreateMutex(NULL, 0, NULL);
+
+	for(int j = 0; j < Nw; j++){
+		ppbaggies[j]->setconsolemutex(consolemutex); // consolemutex shared across workers plus master
+	}
+
+	for(int j = 0; j < Nw; j++){
+		pThread[j] = (HANDLE)_beginthreadex( NULL, 0, &comp_wrapper, (void *) ppbaggies[j], 
+			0, 		&pthreadID[j] );
+	}
+	
+
+	for(int j = 0; j < N; j++){
+		WaitForSingleObject(pThread[j], INFINITE);
+		printf("--> thread %d done\n", j); 
+		delete ppbaggies[j]; // calls destructor
+	}
+	free(ppbaggies);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+  
+  
+
 
   runtime = mytimecheck() - timestart; 
   if (runtime < 0) runtime = 0;  
@@ -127,3 +197,20 @@ BACK:
 
 
 
+unsigned _stdcall comp_wrapper(void *genericaddress)
+{
+	baggie *pbaggie = (baggie *) genericaddress;
+
+//	comp(pbag->v1, pbag->v2, pbag->v3, &(pbag->result));
+	//comp(pbag);
+
+	pbaggie->baggiecomp();
+
+	return 0;
+}
+
+double * dbldup(double const * src, int len){
+	double * p = (double *)calloc(len, sizeof(double));
+	memcpy(p,src,len*sizeof(double));
+	return p;
+}
