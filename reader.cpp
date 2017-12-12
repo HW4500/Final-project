@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
   runtime = mytimecheck() - timestart; 
   if (runtime < 0) runtime = 0;  
   
-  printf("optimal value for trade sequencing = %g in %g\n", optimal[N],runtime);
+  printf("optimal value for trade sequencing = %g in %g s\n", optimal[N],runtime);
 
 
 
