@@ -115,6 +115,7 @@ int main(int argc, char* argv[])
 	HANDLE consolemutex;
 	HANDLE stepdone1mutexe;
 	HANDLE stepdone2mutexe;
+	HANDLE optimutexe;
 	int Nw=2;
 
 	baggie **ppbaggies;
@@ -126,6 +127,7 @@ int main(int argc, char* argv[])
 	}
 	pThread = (HANDLE *)calloc(Nw, sizeof(HANDLE));
 	pthreadID= (unsigned *)calloc(Nw, sizeof(unsigned));
+
 	if((pThread == NULL) || (pthreadID == NULL)) {
 		cout << "cannot allocate" << Nw << "handles and threadids\n";
 		retcode = 1; goto BACK;
@@ -133,6 +135,7 @@ int main(int argc, char* argv[])
 
 	stepdone1mutexe = CreateMutex(NULL, 0, NULL);
 	stepdone2mutexe = CreateMutex(NULL, 0, NULL);
+	optimutexe = CreateMutex(NULL, 0, NULL);
 	int nowstepdone1mutexes = T-1;
 	int nowstepdone2mutexes = T-1;
 
@@ -140,6 +143,7 @@ int main(int argc, char* argv[])
 		ppbaggies[j] = new baggie(optimal,dbldup(shift1, N+1),dbldup(shift2,N+1),j,N, T,alpha,pi1,pi2,p1,p2,rho);  // fake "jobs": normally we would get a list of jobs from e.g. a file
 		ppbaggies[j]->setstepdone1sectionmutex(stepdone1mutexe); 
 		ppbaggies[j]->setstepdone2sectionmutex(stepdone2mutexe); 
+				ppbaggies[j]->setoptisectionmutex(optimutexe); 
 		ppbaggies[j]->setnowstepdone1mutexesaddress( &nowstepdone1mutexes );	
 		ppbaggies[j]->setnowstepdone2mutexesaddress( &nowstepdone2mutexes );
 	}

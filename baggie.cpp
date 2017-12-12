@@ -1,6 +1,7 @@
 #include <windows.h> 
 #include <process.h>
 #include "baggie.h"
+#include<sys\timeb.h>
 
 double mytimecheck(void);
 
@@ -21,6 +22,13 @@ void baggie :: setconsolemutex(HANDLE consolemutexinput)
 {
 	consolemutex = consolemutexinput;
 }
+
+double* baggie :: bag_dbldup(double const * src, int len){
+	double * p = (double *)calloc(len, sizeof(double));
+	memcpy(p,src,len*sizeof(double));
+	return p;
+}
+
 
 void baggie :: letmein(void)
 {
@@ -62,24 +70,38 @@ void baggie :: baggiecomp(void)
 
     int j, h, t,halfN;
     double  newprice, candidate, bestone;
+	double timestart, runtime;
 
 	halfN=int(N/2);
 
 	for (t= T - 2; t>= 0; t--){
 		letmein(); // check to see if we can become busy
+
+		timestart = mytimecheck();
+
+		WaitForSingleObject(optisectionmutex, INFINITE);
+		optimal_copy=bag_dbldup(optimal, (N+1)*T);
+		ReleaseMutex(optisectionmutex);
+
 		for (j = name*(halfN+1); j <= (1-name)*halfN+name*N; j++){
 
 			  bestone = 0;
 			  /** enumerate possibilities **/
 			  for (h = 0; h <= j; h++){
 				  newprice = p1*shift1[h]+p2*shift2[h];
-				  candidate= newprice*((1-rho)*optimal[(t + 1)*(N + 1) + j ] + rho*(h+optimal[(t + 1)*(N + 1) + j - h]));
+				  candidate= newprice*((1-rho)*optimal_copy[(t + 1)*(N + 1) + j ] + rho*(h+optimal_copy[(t + 1)*(N + 1) + j - h]));
 				  if (candidate > bestone) bestone = candidate;
 			  }
+			  WaitForSingleObject(optisectionmutex, INFINITE);
 			  optimal[t*(N + 1) + j] = bestone;
+			  ReleaseMutex(optisectionmutex);
 		  }
 		  WaitForSingleObject(consolemutex, INFINITE);
-			cout << "******worker" << name <<": I am done with stage t = " << t <<"\n";
+
+		    runtime = mytimecheck() - timestart; 
+            if (runtime < 0) runtime = 0;  
+
+			cout << "******worker" << name <<": I am done with stage t = " << t <<" in "<< runtime << " s\n";
 			ReleaseMutex(consolemutex);
 			seeya();
 

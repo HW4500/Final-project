@@ -17,10 +17,13 @@ public:
   int getstatus(void){ return status; }
   void setstepdone1sectionmutex(HANDLE stepdone1sectioninput){stepdone1sectionmutex = stepdone1sectioninput;}
   void setstepdone2sectionmutex(HANDLE stepdone2sectioninput){stepdone2sectionmutex = stepdone2sectioninput;}
+  void setoptisectionmutex(HANDLE optisectioninput){optisectionmutex = optisectioninput;}
   void setnowstepdone1mutexesaddress(int *paddress){address_of_nowstepdone1section = paddress;}
   void setnowstepdone2mutexesaddress(int *paddress){address_of_nowstepdone2section = paddress;}
+  double *bag_dbldup(double const * src, int len);
  private:
   double* optimal;
+  double* optimal_copy;
   double* shift1;
   double* shift2;
   int name;
@@ -38,6 +41,7 @@ public:
   int *address_of_nowstepdone2section;  /** this is the address of the integer keeping track of how many workers are busy **/
   HANDLE stepdone1sectionmutex;
   HANDLE stepdone2sectionmutex;
+  HANDLE optisectionmutex;
   HANDLE consolemutex;
   void letmein(void);
   void seeya(void);
