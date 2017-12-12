@@ -30,7 +30,6 @@ void baggie :: letmein(void)
 
 		icangoin = 0;
 		while(icangoin == 0){
-			Sleep(1000);
 			WaitForSingleObject(stepdone1sectionmutex, INFINITE);
 			WaitForSingleObject(stepdone2sectionmutex, INFINITE);
 			 
