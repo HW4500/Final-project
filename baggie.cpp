@@ -2,6 +2,7 @@
 #include <process.h>
 #include "baggie.h"
 #include<sys\timeb.h>
+#include <math.h>
 
 double mytimecheck(void);
 
@@ -68,11 +69,11 @@ void baggie :: seeya(void){
 void baggie :: baggiecomp(void)
 {
 
-    int j, h, t,halfN;
+    int j, h, t,NCut;
     double  newprice, candidate, bestone;
 	double timestart, runtime;
 
-	halfN=int(N/2);
+	NCut=int(.5*(sqrt(2.0*N*(N+1)+1)-1));
 
 	for (t= T - 2; t>= 0; t--){
 		letmein(); // check to see if we can become busy
@@ -83,7 +84,7 @@ void baggie :: baggiecomp(void)
 		optimal_copy=bag_dbldup(optimal, (N+1)*T);
 		ReleaseMutex(optisectionmutex);
 
-		for (j = name*(halfN+1); j <= (1-name)*halfN+name*N; j++){
+		for (j = name*(NCut+1); j <= (1-name)*NCut+name*N; j++){
 
 			  bestone = 0;
 			  /** enumerate possibilities **/
