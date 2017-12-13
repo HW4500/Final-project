@@ -7,7 +7,7 @@
 double mytimecheck(void);
 
 // implementation file for class baggie
-// A AJOUTER LISTE STEPDONE FAIT READER BAGGIE.H
+
 baggie :: baggie(double* optimal_in, double* shift1_in, double* shift2_in,
 						int name_in,int N_in,int T_in,double alpha_in,double pi1_in,double pi2_in,double p1_in,double p2_in,double rho_in, int Nw_in)
 {
@@ -15,8 +15,6 @@ baggie :: baggie(double* optimal_in, double* shift1_in, double* shift2_in,
 	name = name_in;
 	Nw=Nw_in;
 	N=N_in; T=T_in; alpha=alpha_in; pi1=pi1_in; pi2=pi2_in; p1=p1_in; p2=p2_in; rho=rho_in;
-	status = WAITING;
-	iterationsdone = -1;
 
 }
 

@@ -28,7 +28,6 @@ int main(int argc, char* argv[])
     int j;
     double *optimal, newprice, *shift1, *shift2,timestart, runtime;
 
-
 		if (argc != 3){
 		printf("Usage:  arb1.exe datafilename number_of_threads\n"); retcode = 100; goto BACK;
 	}
@@ -135,6 +134,9 @@ int main(int argc, char* argv[])
 	optimutexe = CreateMutex(NULL, 0, NULL);
 	int *nowstepdonemutexes;
 	nowstepdonemutexes = (int *)calloc(N + 1, sizeof(int));
+	 if (!nowstepdonemutexes){
+	  printf("cannot allocate large list\n"); retcode = 2; goto BACK;
+  }
 
 
 	for(int j = 0; j < Nw; j++){

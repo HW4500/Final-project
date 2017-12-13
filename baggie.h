@@ -12,9 +12,6 @@ public:
 	~baggie(){ printf("worker %d says goodbye\n", name); } 
   void setconsolemutex(HANDLE consolemutexinput);
   void baggiecomp();
-  double getmeits(void){return iterationsdone;}
-  void setstatustofinished(void){status = FINISHED;}
-  int getstatus(void){ return status; }
   void setoptisectionmutex(HANDLE optisectioninput){optisectionmutex = optisectioninput;}
   void setstepdonesectionmutex(HANDLE *stepdonesectioninput){stepdonesectionmutex = stepdonesectioninput;}
   void setnowstepdonemutexesaddress(int **ppaddress){address_of_nowstepdonesection = ppaddress;}
@@ -36,8 +33,6 @@ public:
   double p1;
   double p2;
   double rho;
-  double iterationsdone;
-  int status;
   int **address_of_nowstepdonesection;
   HANDLE optisectionmutex;
   HANDLE *stepdonesectionmutex;
