@@ -1,9 +1,6 @@
 #include <iostream> 
 #include <windows.h> 
 
-#define RUNNING 1
-#define WAITING 0
-#define FINISHED 2 
  
 
 class baggie{
