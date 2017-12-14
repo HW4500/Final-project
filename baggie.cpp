@@ -48,7 +48,7 @@ int baggie :: bag_max(int index,int len, int **address_of_nowstepdonesection){
 	int j,maxi=0;
 	for (j=0;j<len;j++){
 		if(j!=index){
-			if((*address_of_nowstepdonesection)[j]>=maxi){maxi=(*address_of_nowstepdonesection)[j];}
+			if((*address_of_nowstepdonesection)[j]>=maxi) maxi=(*address_of_nowstepdonesection)[j];
 		}
 	}
 	return maxi;
@@ -62,9 +62,7 @@ void baggie :: letmein(void)
 
 		icangoin = 0;
 		while(icangoin == 0){
-			for(i=0;i<Nw;i++){
-				WaitForSingleObject(stepdonesectionmutex[i], INFINITE);
-			}
+			for(i=0;i<Nw;i++) WaitForSingleObject(stepdonesectionmutex[i], INFINITE);
 			 
 			if( (*address_of_nowstepdonesection)[name]>=bag_max(name,Nw,address_of_nowstepdonesection)){ 
 				/** key logic: it checks to see if the number of workers in the heavy section is less than the
@@ -72,10 +70,7 @@ void baggie :: letmein(void)
 				icangoin = 1;
 				localstepdonesection = *address_of_nowstepdonesection;
 			}
-			for(i=0;i<Nw;i++){
-				ReleaseMutex(stepdonesectionmutex[i]);
-			}
-			 
+			for(i=0;i<Nw;i++) ReleaseMutex(stepdonesectionmutex[i]);
 		}
 		WaitForSingleObject(consolemutex, INFINITE);
 		cout << "******worker" << name <<": I'm in. I am at " << localstepdonesection[name] << "\n";
