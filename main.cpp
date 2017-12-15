@@ -163,10 +163,11 @@ int main(int argc, char* argv[])
 
 	for(int j = 0; j < Nw; j++){
 		WaitForSingleObject(pThread[j], INFINITE);
+		WaitForSingleObject(consolemutex, INFINITE);
 		printf("--> thread %d done\n", j); 
+		ReleaseMutex(consolemutex);
 		delete ppbaggies[j]; // calls destructor
 	}
-	free(ppbaggies);
 
 
 
